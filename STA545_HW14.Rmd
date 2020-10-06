@@ -1,0 +1,138 @@
+---
+title: "STA545 HW4"
+author: "Marko Lazin"
+date: "9/30/2020"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+1(c) These two models will not always be the same as the linear model in 1(b) because they are search algorithms so there is a degree of stochasticity in their searches, where as the linear model will always yield the same result (assuming the same seed).
+
+```{r}
+#install.packages("MacTex")
+install.packages("ISLR", repos = "http://cran.us.r-project.org")
+#library(MacTex)
+library(ISLR)
+college_data<-ISLR::College
+#summary(college_data)
+
+#1(a)
+set.seed(5454)
+seed_Order<-runif(777)
+cllg_Rndm<-college_data[order(seed_Order),]
+train<-cllg_Rndm[1:500,]
+test<-cllg_Rndm[501:777,]
+
+#1(b)
+train_fit_lm<-lm(Apps~.,data=train)
+attributes(train_fit_lm)
+train_fit_lm$coefficients
+
+train_SE<-summary(train_fit_lm)$sigma
+test_SE<-sqrt(sum((predict(train_fit_lm,test)-test$Apps)^2)/(nrow(test)-2))
+train_MSE<-(summary(train_fit_lm)$residuals^2)
+
+#1(c)
+install.packages("glmnet", repos = "http://cran.us.r-project.org")
+library(glmnet)
+install.packages("dplyr", repos = "http://cran.us.r-project.org")
+library(dplyr)
+install.packages("pls", repos = "http://cran.us.r-project.org")
+library(pls)
+
+train<-train%>%
+  mutate(Private=ifelse(Private=="No",0,1))
+train_independent<-train[,c(1,3:18)]
+train_dependent<-train[,2]
+#train_dependent
+#train_independent
+
+#ridge model
+train_ridgeModel=glmnet(x=as.matrix(train[,c(1,3:18)]),y=as.vector(train[,2]),family="gaussian",alpha=0)
+
+coef(train_ridgeModel)
+dim(coef(train_ridgeModel))
+train_ridgeModel$lambda[18]
+coef(train_ridgeModel)[,18]
+
+train_lamda_D18<-sqrt(sum(coef(train_ridgeModel)[2:17,18]^2))
+train_lamda_D18
+
+coef(train_ridgeModel)
+dim(coef(train_ridgeModel))
+train_ridgeModel$lambda[100]
+coef(train_ridgeModel)[,100]
+
+train_lamda_D100<-sqrt(sum(coef(train_ridgeModel)[2:17,100]^2))
+train_lamda_D100
+
+train_ridge_cv<-cv.glmnet(x=as.matrix(train[,c(1,3:18)]),y=as.vector(train[,2]),family="gaussian",alpha=0, lambda= )
+train_bestLambda<-train_ridge_cv$lambda.min
+train_bestLambda
+
+#pcr model (not sure how to execute a PCR model in R)
+train_pcrModel=pcr(train[,2]~.,data=train,scale=TRUE,validation="CV")
+summary(train_pcrModel)
+
+#coef(train_pcrModel)
+#dim(coef(train_pcrModel))
+#summary(train_pcrModel)
+#train_pcrModel$lambda[18]
+#coef(train_pcrModel)[,18]
+
+#train_M_D18<-sqrt(sum(coef(train_pcrModel)[2:17,18]^2))
+#train_M_D18
+
+#1(d)
+set.seed(4545)
+seed_Order_1d<-runif(500)
+train_Rndm<-train[order(seed_Order_1d),]
+train_A<-train_Rndm[1:250,]
+train_B<-train_Rndm[251:500,]
+
+#1(e)
+train_B_ridgeModel=glmnet(x=as.matrix(train_B[,c(1,3:18)]),y=as.vector(train_B[,2]),family="gaussian",alpha=0)
+
+train_B_ridge_cv<-cv.glmnet(x=as.matrix(train_B[,c(1,3:18)]),y=as.vector(train_B[,2]),family="gaussian",alpha=0, lambda= )
+train_B_bestLambda<-train_B_ridge_cv$lambda.min
+train_B_bestLambda
+
+train_A_ridgeModel=glmnet(x=as.matrix(train_A[,c(1,3:18)]),y=as.vector(train_A[,2]),family="gaussian",alpha=0,lambda=train_B_bestLambda)
+coef(train_A_ridgeModel)
+
+train_A_lambdaB<-sqrt(sum(coef(train_A_ridgeModel)[2:17,train_B_bestLambda]^2))
+train_A_lambdaB
+
+#1(f) not really sure how to setup PCR models
+train_B_pcrModel=pcr(train[,2]~.,data=train_B,scale=TRUE,validation="CV")
+summary(train_B_pcrModel)
+
+coef(train_B_pcrModel)
+dim(coef(train_B_pcrModel))
+summary(train_B_pcrModel)
+#train_B_pcrModel$lambda[#18]
+#coef(train_B_pcrModel)[,#18]
+
+#train_B_M<-sqrt(sum(coef(train_B_pcrModel)[2:17,#18]^2))
+#train_B_M
+
+#2
+
+
+#3
+
+
+
+```
+
+
+```{r pressure, echo=FALSE}
+
+``

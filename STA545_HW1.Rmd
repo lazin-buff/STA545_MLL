@@ -1,0 +1,38 @@
+---
+title: "STA545 HW1"
+author: "Marko Lazin"
+date: "9/9/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+1(a)
+1(b)
+1(c)
+1(d)
+1(e)
+
+This was my first attempt at using RMarkdown. There were several discontinuity in packages (MacTex) and the version of R I have downloaded on my computer. Additionally when running both the template provided on UB Learns and by creating my own template via the RMarkdown cheat-sheet the following error was generated for the first line of script:
+
+Error in loadNamespace(j <- i[[1L]], c(lib.loc, .libPaths()), versionCheck = vI[[j]]) : 
+  namespace ‘xfun’ 0.13 is already loaded, but >= 0.15 is required
+  
+
+
+```{r Wage}
+#install.packages("MacTex")
+install.packages("ISLR")
+#library(MacTex)
+library(ISLR)
+summary(Wage)
+```
+
+
+```{r pressure, echo=FALSE}
+
+``

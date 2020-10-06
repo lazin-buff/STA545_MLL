@@ -1,0 +1,88 @@
+---
+title: "STA545_HW5"
+author: "Marko Lazin"
+date: "10/3/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#initialize
+install.packages("ISLR")
+library(ISLR)
+college_data<-ISLR::College
+college_data
+
+#1(a)
+set.seed(5454)
+install.packages("pls")
+library(pls)
+
+seed_Order<-runif(777)
+cllg_Rndm<-college_data[order(seed_Order),]
+train<-cllg_Rndm[1:500,]
+test<-cllg_Rndm[501:777,]
+
+set.seed(4545)
+seed_Order_1d<-runif(500)
+train_Rndm<-train[order(seed_Order_1d),]
+train_A<-train_Rndm[1:250,]
+train_B<-train_Rndm[251:500,]
+
+pls_college_fit=plsr(Apps~.,data=train_B,scale=TRUE,validation="CV")
+summary(pls_college_fit)
+validationplot(pls_college_fit,val.type = "")
+
+pls.pred=predict(pls_college_fit,x[train_A,],ncomp=10)
+
+#2
+
+#3
+install.packages("ElemStatLearn")
+data<-read.csv("prostate.csv",header=TRUE)
+
+#need to define yi xij and lamba
+sign
+
+
+#testing out writing a function
+f<-function(x,y){x^2+y^2+x*y}
+n<-30
+xpts<-seq(-1.5,1.5,len=n)
+ypts<-seq(-1.5,1.5,len=n)
+gr<-expand.grid(x=xpts,y=ypts)
+feval<-with(gr,matrix(f(x,y),nrow=n,ncol=n))
+par(mar=c(5,4,1,1))
+contour(xpts,ypts,feval,nlevels=20,xlab="x",ylab="y")
+points(-1,-1,pch=19,cex=2)
+abline(h=-1)
+
+fevalu8<-f(xpts,y=-1)
+plot(xpts,fevalu8,type="l",xlab="x",ylab="f(x|y=-1)")
+
+fx<-function(x){f(x,y=-1)}
+op<-optimize(fx,c(-1.5,1.5))
+op
+x1<-op$minimum
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
